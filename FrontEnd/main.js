@@ -73,3 +73,7 @@ function onClick(filter) {
     let filtered = filter;
     generateWorks(filtered);
 }
+
+// Bannière noire "Mode édition"
+const token = sessionStorage.getItem("token")
+console.log(token)
