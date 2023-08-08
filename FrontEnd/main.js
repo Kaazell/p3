@@ -42,21 +42,23 @@ function generateWorks(data) {
 };
 
 // Categories //
+// Fonction d'appel Fetch pour récupérer les categories 
 async function getCategories() {
 
     const response = await fetch(`${url}/categories`);
     const dataCategories = await response.json();
     console.log(dataCategories);
     
+    // Utilisation d'une fonction permettant de générer les boutons: on met le nom du bouton en premier paramètre et le filtre appliqué en 2eme paramètre.
     generateFilters("Tous", () => onClick(dataWorks.filter(work => work.userId === 1)));
     generateFilters(dataCategories[0].name, () => onClick(dataWorks.filter(work => work.category.id === 1)));
     generateFilters(dataCategories[1].name, () => onClick(dataWorks.filter(work => work.category.id === 2)));
     generateFilters(dataCategories[2].name, () => onClick(dataWorks.filter(work => work.category.id === 3)));
 
 }
-
 getCategories()
 
+// La fonction generateFilters sera utilisé dans getCategories()
 function generateFilters(name, onClick) {
 
     const button = document.createElement('button');
