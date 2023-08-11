@@ -89,4 +89,115 @@ function connected() {
 }
 connected()
 
-// Gérer le logout 
+// L'utilisateur est déconnecté et le token supprimé lorsqu'il clique sur logout
+function removeToken() {
+    if(logButton.innerText === "logout") {
+        logButton.addEventListener("click", () => sessionStorage.removeItem("token"));
+    }
+}
+removeToken()
+
+
+// Modal
+
+const openModal = function (e) {
+    e.preventDefault();
+  
+    const target = document.querySelector(e.target.getAttribute('href'));
+    target.style.display = null;
+    target.removeAttribute('aria-hidden');
+    target.setAttribute('aria-modal', 'true');
+    modal = target;
+    modal.addEventListener('click', closeModal);
+    modal.querySelector('.js-modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation);
+  };
+  
+  const closeModal = function (e) {
+    if (modal === null) return;
+    e.preventDefault();
+    const target = document.querySelector(e.target.getAttribute('href'));
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.removeAttribute('aria-modal');
+    modal.removeEventListener('click', closeModal);
+    modal.querySelector('.js-modal-close').removeEventListener('click', closeModal);
+    modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation);
+    modal = null;
+  };
+  
+  const stopPropagation = function (e) {
+    e.stopPropagation();
+  };
+  
+  document.querySelectorAll(".js-modal").forEach(a => {
+    a.addEventListener('click', openModal);
+  });
+  
+  window.addEventListener('keydown', function (e) {
+    if (e.key === "Escape" || e.key === "Esc") {
+      closeModal(e);
+    }
+  });
+  
+
+  // Display des éléments dans la modal
+  const modalWrapper = document.querySelector('.modal-wrapper');
+  
+  // Appel API pour display la gallery dans la modal
+  function displayGalleryModal(d) {
+    const galleryModal = document.createElement('div');
+    modalWrapper.append(galleryModal);
+    galleryModal.className = "works-modal";
+    for (let i = 0; i < d.length; i++) {
+        let figure = document.createElement('figure');
+        let img = document.createElement('img');
+        let trashIcon = document.createElement('i');
+        
+        // Rajout de l'icone poubelle pour supprimer des éléments
+        trashIcon.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+        img.src = d[i].imageUrl;
+
+        galleryModal.append(figure);
+        figure.append(trashIcon);
+        figure.append(img);
+        figure.append("éditer");
+        trashIcon.addEventListener("click", handleDelete)
+    }
+  }
+  
+  async function getJsonModal() {
+    try {
+      const response = await fetch(`${url}/works`, {
+        method: 'GET'
+      });
+      if (!response.ok) {
+        throw new Error('Une erreur est survenue.');
+      }
+      const dataModal = await response.json();
+      displayGalleryModal(dataModal);
+      // La balise hr permet de rajouter une ligne horizontale
+      const hr = document.createElement('hr');
+      const modalButtons = document.createElement('div');
+      modalButtons.setAttribute('id','gallery-edit-buttons')
+      modalButtons.innerHTML = "<button class='gallery-edit'>Ajouter une photo</button><button id='delete-gallery' class='delete-gallery'>Supprimer la galerie</button>";
+      modalWrapper.append(hr);
+      modalWrapper.append(modalButtons);
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+  getJsonModal()
+
+  // Delete
+
+
+//Il manque l'autorisation avec le token
+async function handleDelete() {
+response = await fetch(`${url}/works/{1}`,{
+    method: "DELETE"
+})
+dataDelete = await response.json()
+console.log(dataDelete)
+// alert("DELETE")
+}
